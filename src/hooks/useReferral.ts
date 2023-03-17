@@ -10,8 +10,9 @@ import { useAllTransactions, useTransactionAdder, useFetchPendingTxns, useClearP
 import { useReferralContract } from "./useContract"
 import addresses from "src/config/address"
 import { DEFAULT_CHAIN_ID } from "src/config/chains"
+import { pairs } from "src/config";
+import { strategies } from "src/config";
 import { getErrorText } from "src/helper/getErrorText";
-
 
 function useReferral() {
 
@@ -28,8 +29,6 @@ function useReferral() {
     const clearPendingTransaction = useClearPendingTxns()
 
     const poolAddrs: string[] = []
-    const pairs = ['dai_busd', 'usdc_busd', 'usdc_usdt', 'busd_usdt']
-    const strategies = ['furfiStrategy', 'standardStrategy', 'stablecoinStrategy']
 
     useEffect(() => {
         pairs.map(pair => {

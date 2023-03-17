@@ -15,13 +15,11 @@ export enum Strategy {
 }
 
 
-export const pairs = ['dai_busd', 'usdc_busd', 'usdc_usdt', 'busd_usdt'];
-// export const pairs = ['busd_usdt'];
-
+export const pairs = ["dai_busd", "usdc_busd", "usdc_usdt", "usdt_busd", "eth_usdc", "btcb_busd", "busd_bnb"];
 
 export const strategies = ['furfiStrategy', 'standardStrategy', 'stablecoinStrategy'];
 
 
-// export const DATABASE_URL = 'http://localhost:4000/api/computed-apys'
-export const DATABASE_URL = 'http://185.53.46.150:4000/api/computed-apys'
+// export const DATABASE_URL = 'http://localhost:4000/api/details'
+export const DATABASE_URL = 'http://185.53.46.150:4000/api/details'
 

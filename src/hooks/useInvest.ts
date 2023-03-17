@@ -102,16 +102,30 @@ export const useDepositFromEth = (pair: string, strategy: Strategy) => {
             const amountBn = parseUnits(amount, 18);
             let tx: any;
             try {
-                tx = await strategyContract.deposit(
-                    referrer ?? AddressZero,
-                    [addresses.bnb[DEFAULT_CHAIN_ID], addresses.bnb[DEFAULT_CHAIN_ID]],
-                    [tokenA, tokenB],
-                    [amountBn.div(2), amountBn.div(2)],
-                    [0, 0],
-                    10000,
-                    MaxUint256,
-                    { value: amountBn }
-                );                
+                if(tokens[1]=='bnb'){
+                    tx = await strategyContract.deposit(
+                        referrer ?? AddressZero,
+                        [addresses.bnb[DEFAULT_CHAIN_ID]],
+                        [tokenA],
+                        [amountBn.div(2)],
+                        [0],
+                        10000,
+                        MaxUint256,
+                        { value: amountBn }
+                    );
+                }
+                else{
+                    tx = await strategyContract.deposit(
+                        referrer ?? AddressZero,
+                        [addresses.bnb[DEFAULT_CHAIN_ID], addresses.bnb[DEFAULT_CHAIN_ID]],
+                        [tokenA, tokenB],
+                        [amountBn.div(2), amountBn.div(2)],
+                        [0, 0],
+                        10000,
+                        MaxUint256,
+                        { value: amountBn }
+                    );
+                }                
                 fetchPendingTransaction(tx.hash, `Deposit ${amount + ' BNB'}`)
                 await tx.wait();
                 addTransaction(tx, { summary: `Deposit ${amount + ' BNB'}` })
@@ -203,15 +217,28 @@ export const useWithdrawToEth = (pair: string, strategy: Strategy) => {
             const amountBn = parseUnits(amount, 18);
             let tx: any;
             try {
-                tx = await strategyContract.withdraw(
-                    amountBn,
-                    [tokenA, tokenB],
-                    [addresses.bnb[DEFAULT_CHAIN_ID], addresses.bnb[DEFAULT_CHAIN_ID]],
-                    [amountBn.div(2), amountBn.div(2)],
-                    [0, 0],
-                    10000,
-                    MaxUint256
-                );                
+                if(tokens[1]=='bnb'){
+                    tx = await strategyContract.withdraw(
+                        amountBn,
+                        [tokenA],
+                        [addresses.bnb[DEFAULT_CHAIN_ID]],
+                        [amountBn.div(2)],
+                        [0],
+                        10000,
+                        MaxUint256
+                    );
+                }
+                else{
+                    tx = await strategyContract.withdraw(
+                        amountBn,
+                        [tokenA, tokenB],
+                        [addresses.bnb[DEFAULT_CHAIN_ID], addresses.bnb[DEFAULT_CHAIN_ID]],
+                        [amountBn.div(2), amountBn.div(2)],
+                        [0, 0],
+                        10000,
+                        MaxUint256
+                    );
+                }              
                 fetchPendingTransaction(tx.hash, `Withdraw ${amount + ' LP to BNB '}`)
                 await tx.wait();
                 addTransaction(tx, { summary: `Withdraw ${amount + ' LP to BNB '}`})

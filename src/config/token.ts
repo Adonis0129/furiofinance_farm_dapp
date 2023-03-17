@@ -46,18 +46,18 @@ export const tokens: Record<string, IToken> = {
         decimal: 18,
         logo: DaiLogo
     },
-    // 'eth': {
-    //     name: 'WETH',
-    //     symbol: 'WETH',
-    //     decimal: 18,
-    //     logo: EthereumLogo
-    // },
-    // 'btcb': {
-    //     name: 'WBTC',
-    //     symbol: 'WBTC',
-    //     decimal: 18,
-    //     logo: BtcLogo
-    // },
+    'eth': {
+        name: 'ETH',
+        symbol: 'ETH',
+        decimal: 18,
+        logo: EthereumLogo
+    },
+    'btcb': {
+        name: 'BTCB',
+        symbol: 'BTCB',
+        decimal: 18,
+        logo: BtcLogo
+    },
     // 'furfi': {
     //     name: 'FURFI',
     //     symbol: 'FURFI',

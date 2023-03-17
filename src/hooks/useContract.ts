@@ -20,7 +20,6 @@ export function useTokenContract(tokenAddress: string, withSignerIfPossible?: bo
 
 export function useStrategyContract(pair: string, strategy: Strategy) {
     let addr = "", abi = {}
-    // let isStableSwap = (pair === 'usdc_busd' || pair === 'usdc_usdt' || pair === 'busd_usdt')
     if (strategy === Strategy.furfiStrategy) {
         addr = addresses[pair]['furfiStrategy'][DEFAULT_CHAIN_ID]
         abi = FurfiStrategyABI

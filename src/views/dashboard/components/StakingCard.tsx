@@ -135,7 +135,7 @@ function StakingCard() {
                     <Box sx={{ mt: 3, ml: 4 }}>
                         <Box display="flex" alignItems="center">
                             <img src={FurfiLogo} alt="furfi_logo" style={{ width: '32px', height: '32px' }} />
-                            <Typography sx={{ fontSize: '20px', ml: 2 }}>FurFiStaking</Typography>
+                            <Typography sx={{ fontSize: '20px', ml: 2 }}>FURFI</Typography>
                         </Box>
                     </Box>
                     {!stakedAmount ? (

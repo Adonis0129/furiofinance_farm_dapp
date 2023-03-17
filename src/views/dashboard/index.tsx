@@ -49,38 +49,44 @@ function Dashboard() {
     const { address: account } = useAccount();
     const { data } = useSWR(DATABASE_URL);
 
-    const stablePools: IPoolCard[] =
-        data?.instances?.map((instance) => {
-            const tokenName = instance.poolName.split('_');
-            return {
-                aTokenLogo: tokens[tokenName[0]].logo,
-                bTokenLogo: tokens[tokenName[1]].logo,
-                poolName: (instance.poolName).toUpperCase() ?? "",
-                lp: instance.poolName ?? "",
-                lpPrice: instance.lpPrice ?? 0,
-                tvl: instance.tvl ?? 0,
-                addresses: {
-                    furfiStrategy: instance.furfiStrategy.Address ?? "",
-                    standardStrategy: instance.standardStrategy.Address ?? "",
-                    stablecoinStrategy: instance.stablecoinStrategy.Address ?? "",
-                },
-                apy: {
-                    furfiStrategy: instance.furfiStrategy.Apy ?? 0,
-                    standardStrategy: instance.standardStrategy.Apy ?? 0,
-                    stablecoinStrategy: instance.stablecoinStrategy.Apy ?? 0,
-                },
-                lpRewardsApr: instance.lpRewardsAPR ?? 0,
-                blockRewardsApr: {
-                    furfiStrategy: instance.furfiStrategy.FarmBaseAPR ?? 0,
-                    standardStrategy: instance.standardStrategy.FarmBaseAPR ?? 0,
-                    stablecoinStrategy: instance.stablecoinStrategy.FarmBaseAPR ?? 0,
-                },
-                additionalMintApr: instance.standardStrategy.additionalMintAPR ?? 0,
-                additionalMintANdStakedApr: instance.furfiStrategy.additionalMintAndStakedAPR ?? 0,
-                efficiencyLevel: data.efficiencyLevel ?? 0,
-                furFiBnbPrice: data.furFiBnbPrice ?? 0,
-            };
-        }) ?? [];
+    const stablePools: IPoolCard[] = [];
+    const mixedPools: IPoolCard[] = [];
+
+    data?.instances?.map((instance) => {
+        const tokenName = instance.poolName.split('_');
+        let _pool: IPoolCard = {
+            aTokenLogo: tokens[tokenName[0]].logo,
+            bTokenLogo: tokens[tokenName[1]].logo,
+            poolName: (instance.poolName).toUpperCase() ?? "",
+            lp: instance.poolName ?? "",
+            lpPrice: instance.lpPrice ?? 0,
+            tvl: instance.tvl ?? 0,
+            addresses: {
+                furfiStrategy: instance.furfiStrategy.Address ?? "",
+                standardStrategy: instance.standardStrategy.Address ?? "",
+                stablecoinStrategy: instance.stablecoinStrategy.Address ?? "",
+            },
+            apy: {
+                furfiStrategy: instance.furfiStrategy.Apy ?? 0,
+                standardStrategy: instance.standardStrategy.Apy ?? 0,
+                stablecoinStrategy: instance.stablecoinStrategy.Apy ?? 0,
+            },
+            lpRewardsApr: instance.lpRewardsAPR ?? 0,
+            blockRewardsApr: {
+                furfiStrategy: instance.furfiStrategy.FarmBaseAPR ?? 0,
+                standardStrategy: instance.standardStrategy.FarmBaseAPR ?? 0,
+                stablecoinStrategy: instance.stablecoinStrategy.FarmBaseAPR ?? 0,
+            },
+            additionalMintApr: instance.standardStrategy.additionalMintAPR ?? 0,
+            additionalMintANdStakedApr: instance.furfiStrategy.additionalMintAndStakedAPR ?? 0,
+            efficiencyLevel: data.efficiencyLevel ?? 0,
+            furFiBnbPrice: data.furFiBnbPrice ?? 0,
+        };
+        if(instance.poolName == "dai_busd" || instance.poolName == "usdc_busd" || instance.poolName == "usdc_usdt" || instance.poolName == "usdt_busd")
+            stablePools.push(_pool);
+        else
+            mixedPools.push(_pool);
+    });
 
     const slideSettings = {
         // customPaging: function() {
@@ -201,7 +207,7 @@ function Dashboard() {
                 </Box>
                 <Box className={classes.sectionView}>
                     <Box sx={{ width: { xs: '90%', md: '450px' }, my: '50px' }}>
-                        <Typography sx={titleStyle}>Your Pools</Typography>
+                        <Typography sx={titleStyle}>Your Invested Pools</Typography>
                         {investData && investData.length > 0 ? (
                             <Slide {...slideSettings}>
                                 {investData?.map((data) => (
@@ -213,13 +219,21 @@ function Dashboard() {
                         )}
                     </Box>
                     <Box sx={{ width: { xs: '90%', md: '450px' }, my: '50px' }}>
-                        <Typography sx={titleStyle}>FurFi Staking</Typography>
+                        <Typography sx={titleStyle}>Single Furfi Staking</Typography>
                         <StakingCard />
                     </Box>
                 </Box>
-                <Typography sx={{...titleStyle, fontSize: '32px', mt:'50px'}}>Stablecoin Farms</Typography>
+                <Typography sx={{...titleStyle, fontSize: '32px', mt:'50px'}}>Stable Pools</Typography>
                 <Box className={classes.sectionView}>
                     {stablePools.map((pool, index) => (
+                        <Box sx={{ width: { xs: '90%', md: '450px' }, my: '20px' }} key={index}>
+                            <PoolCard poolInfo={pool} />
+                        </Box>
+                    ))}
+                </Box>
+                <Typography sx={{...titleStyle, fontSize: '32px', mt:'50px'}}>Mixed Pools</Typography>
+                <Box className={classes.sectionView}>
+                    {mixedPools.map((pool, index) => (
                         <Box sx={{ width: { xs: '90%', md: '450px' }, my: '20px' }} key={index}>
                             <PoolCard poolInfo={pool} />
                         </Box>
