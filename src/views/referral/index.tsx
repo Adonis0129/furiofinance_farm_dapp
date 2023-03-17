@@ -137,7 +137,7 @@ function Referral() {
                             {!address ? (
                                 <Skeleton sx={{ bgcolor: 'grey.500' }} width="20px" height="25px" />
                                 ) : (
-                                <Typography>{friends}</Typography>
+                                <Typography>{Number(friends)}</Typography>
                             )}
                         </Box>
                         <Box>

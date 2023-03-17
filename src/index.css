@@ -61,9 +61,28 @@ input[type=number]::-webkit-outer-spin-button {
     margin: 0;
 }
 
+
+
+
+
 .slick-dots li.slick-active button:before {
     color: white
 }
+.slick-dots {
+    position: absolute;
+    bottom: -42px;
+    /* display: block; */
+    width: fit-content;
+    padding: 0;
+    margin-left: 32px;
+    margin-right: 32px;
+    list-style: none;
+    text-align: left;
+}
+
+
+
+
 
 .Toastify__toast-container--top-right {
     top: 75px

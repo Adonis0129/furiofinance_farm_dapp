@@ -1,13 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import useSWR from 'swr';
 import { useAccount } from 'wagmi';
-import Slide from 'react-slick';
+import Slider from 'react-slick';
 
 import { makeStyles } from '@mui/styles';
-import { Divider, Typography, Skeleton } from '@mui/material';
+import { Divider, Typography, Skeleton, Button } from '@mui/material';
 import { Box } from '@mui/system';
+import ArrowBackIosNewRoundedIcon from '@mui/icons-material/ArrowBackIosNewRounded';
+import ArrowForwardIosRoundedIcon from '@mui/icons-material/ArrowForwardIosRounded';
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
 
 import { addReferrer } from '../../state/application/actions';
@@ -42,6 +44,11 @@ const titleStyle = {
     fontWeight: 600, 
     textAlign: 'center'
 }
+
+
+
+
+
 
 
 function Dashboard() {
@@ -88,17 +95,6 @@ function Dashboard() {
             mixedPools.push(_pool);
     });
 
-    const slideSettings = {
-        // customPaging: function() {
-        //     return (<FiberManualRecordIcon color='info' fontSize='small' />);
-        //   },
-        dots: true,
-        dotsClass: 'slick-dots slick-thumb',
-        infinite: true,
-        speed: 500,
-        slidesToShow: 1,
-        slidesToScroll: 1,
-    };
 
     const [param] = useSearchParams();
     const dispatch = useDispatch();
@@ -137,6 +133,25 @@ function Dashboard() {
             setAvgAPY(avgApy);
         }
     }, [investData]);
+
+
+
+
+    const slideSettings = {
+        dots: true,
+        arrows: false,
+        infinite: true,
+        speed: 500,
+        slidesToShow: 1,
+        slidesToScroll: 1,
+    };
+    const sliderRef = useRef<Slider>(null);
+    const next = () => {
+      sliderRef.current?.slickNext();
+    };
+    const previous = () => {
+      sliderRef.current?.slickPrev();
+    };
 
     return (
         <div className={classes.dashboardView}>
@@ -208,12 +223,38 @@ function Dashboard() {
                 <Box className={classes.sectionView}>
                     <Box sx={{ width: { xs: '90%', md: '450px' }, my: '50px' }}>
                         <Typography sx={titleStyle}>Your Invested Pools</Typography>
-                        {investData && investData.length > 0 ? (
-                            <Slide {...slideSettings}>
-                                {investData?.map((data) => (
-                                    <ClaimCard detail={data}  key={data.pair && data.strategy}/>
-                                ))}
-                            </Slide>
+                        {   investData && investData.length > 0 ? (
+                            <Box sx={{width:'100%'}}>
+                                <Slider ref={sliderRef} {...slideSettings}>
+                                    {investData?.map((data) => (
+                                        <ClaimCard detail={data}  key={data.pair && data.strategy}/>
+                                    ))}
+                                </Slider>
+                                {   investData.length > 1 &&
+                                    <Box 
+                                        sx={{
+                                            display:'flex', 
+                                            justifyContent:"flex-end", 
+                                            mr:'32px',
+                                            gap:'8px',
+                                            '& .MuiButton-root': {
+                                                minWidth:"fit-content",
+                                                borderRadius:'12px',
+                                                color:'white',
+                                                backgroundColor:'#0f3152'
+                                            }
+                                        }}
+                                    >
+                                        <Button onClick={previous}> 
+                                            <ArrowBackIosNewRoundedIcon/> 
+                                        </Button>
+                                        <Button onClick={next}> 
+                                            <ArrowForwardIosRoundedIcon/> 
+                                        </Button>
+                                    </Box>
+                                }
+                          </Box>
+                            
                         ) : (
                             <NoClaimCard />
                         )}
