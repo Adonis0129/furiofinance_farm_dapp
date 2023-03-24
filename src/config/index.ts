@@ -21,5 +21,5 @@ export const strategies = ['furfiStrategy', 'standardStrategy', 'stablecoinStrat
 
 
 // export const DATABASE_URL = 'http://localhost:4000/api/details'
-export const DATABASE_URL = 'http://185.53.46.150:4000/api/details'
+export const DATABASE_URL = 'http://38.242.254.162:4000/api/details'
 
