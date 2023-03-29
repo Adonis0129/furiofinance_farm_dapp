@@ -18,6 +18,7 @@ import { tokens } from 'src/config/token';
 import { DATABASE_URL } from 'src/config';
 import { trim } from 'src/helper/trim';
 import StakingCard from './components/StakingCard';
+import useStake from 'src/hooks/useStake';
 import ClaimCard, { NoClaimCard } from './components/ClaimCard';
 import PoolCard, { IPoolCard } from './components/PoolCard';
 
@@ -109,6 +110,10 @@ function Dashboard() {
     }, [referrer]);
 
     const { investData } = useInvestInfo();
+    const { stakedAmount } = useStake();
+    const furfiPrice = data?.furFiPrice ?? 0;
+    const stakingPoolApr = data?.stakingPoolApr ?? 0;
+
     const [totalInvest, setTotalInvest] = useState(0);
     const [avgAPY, setAvgAPY] = useState(0);
 
@@ -128,6 +133,11 @@ function Dashboard() {
                 invest += lpPrice * Number(item.deposit);
                 sumApy += apy * lpPrice * Number(item.deposit);
             });
+
+            //add furfi single staking pool invest amount
+            invest += Number(stakedAmount) * furfiPrice;
+            sumApy += stakingPoolApr * Number(stakedAmount) * furfiPrice;
+
             avgApy = invest ? (sumApy / invest) : 0;
             setTotalInvest(invest);
             setAvgAPY(avgApy);
