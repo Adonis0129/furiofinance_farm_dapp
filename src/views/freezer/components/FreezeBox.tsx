@@ -103,7 +103,7 @@ function FreezeBox({ apr }: IFreeze) {
             toast.warn("Please connect wallet", {theme:"colored"})
             return;
         }
-        if(Number(amount) <= 0 || Number(amount) > (balance?.formatted ?? 0)) { 
+        if(Number(amount) <= 0 || Number(amount) > Number(balance?.formatted ?? 0)) { 
             toast.warn("Invalid amount", {theme:"colored"})
             return;
         }

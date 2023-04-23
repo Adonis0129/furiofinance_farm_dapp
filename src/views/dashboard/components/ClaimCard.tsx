@@ -27,7 +27,6 @@ import {
 import useBalances from 'src/hooks/useBalances';
 import { useReferrer } from 'src/state/application/hooks';
 
-
 const useStyles = makeStyles((theme) => ({
     cardView: {
         display: 'flex',
@@ -89,7 +88,7 @@ function ClaimCard(props: IProps) {
         stakedInFurfi,
         pendingFurfiRewards,
         pendingLpRewards,
-        reinvested
+        reinvested,
     } = props.detail;
 
     const [apy, setApy] = useState(0);
@@ -113,7 +112,6 @@ function ClaimCard(props: IProps) {
             ? Strategy.stablecoinStrategy
             : Strategy.standardStrategy;
 
-
     const defaultProvider = getDefaultProvider();
     const classes = useStyles();
     const { data: signer } = useSigner();
@@ -135,7 +133,6 @@ function ClaimCard(props: IProps) {
     const [depositAmt, setDepositAmt] = useState<string>('');
     const [withdrawAmt, setWithdrawAmt] = useState<string>('');
 
-
     const tokenA = pair.split('_')[0];
     const tokenB = pair.split('_')[1];
 
@@ -148,7 +145,7 @@ function ClaimCard(props: IProps) {
                 symbol,
                 address: tokenAddress,
                 instance: new ERC20(tokenAddress, signer ?? defaultProvider, symbol),
-        });
+            });
     };
 
     const onSetDepositAmount = (e) => {
@@ -160,65 +157,62 @@ function ClaimCard(props: IProps) {
     };
 
     const handleClickDepositMax = () => {
-        setDepositAmt(String(balances?.find(item => item.tokenSymbol == token.symbol)?.balance))
-    }
+        setDepositAmt(String(balances?.find((item) => item.tokenSymbol == token.symbol)?.balance));
+    };
 
     const onInvest = async () => {
-        if(!account) { 
-            toast.warn("Please connect wallet", {theme:"colored"})
+        if (!account) {
+            toast.warn('Please connect wallet', { theme: 'colored' });
             return;
         }
 
-        const balance = balances?.find(item => item.tokenSymbol == token.symbol) ?? 0;
+        const balance = balances?.find((item) => item.tokenSymbol == token.symbol) ?? 0;
 
-        if(Number(depositAmt) <= 0 || Number(depositAmt) > balance) { 
-            toast.warn("Invalid amount", {theme:"colored"})
+        if (Number(depositAmt) <= 0 || Number(depositAmt) > Number(balance)) {
+            toast.warn('Invalid amount', { theme: 'colored' });
             return;
         }
         if (token.symbol === 'BNB') {
-           await onDepositFromEth(depositAmt, referrer)
+            await onDepositFromEth(depositAmt, referrer);
             return;
-        }else {
-            await onDepositFromToken(token.instance, depositAmt, referrer)
+        } else {
+            await onDepositFromToken(token.instance, depositAmt, referrer);
             return;
         }
     };
 
     const onWithdraw = async () => {
-        if(!account) { 
-            toast.warn("Please connect wallet", {theme:"colored"})
+        if (!account) {
+            toast.warn('Please connect wallet', { theme: 'colored' });
             return;
         }
 
-        if(Number(withdrawAmt) <= 0 || Number(withdrawAmt) > Number(depositedAmount)) { 
-            toast.warn("Invalid amount", {theme:"colored"})
+        if (Number(withdrawAmt) <= 0 || Number(withdrawAmt) > Number(depositedAmount)) {
+            toast.warn('Invalid amount', { theme: 'colored' });
             return;
         }
         if (token.symbol === 'BNB') {
-            await onWithdrawToEth(withdrawAmt)
+            await onWithdrawToEth(withdrawAmt);
+            return;
+        } else {
+            await onWithdrawToToken(token.instance, withdrawAmt);
             return;
         }
-        else {
-            await onWithdrawToToken(token.instance, withdrawAmt)
-            return;
-        }
-      
     };
 
     const onClaim = async () => {
-        if(!account) { 
-            toast.warn("Please connect wallet", {theme:"colored"})
+        if (!account) {
+            toast.warn('Please connect wallet', { theme: 'colored' });
             return;
         }
 
-        if(Number(pendingFurfiRewards) <= 0 ) { 
-            toast.warn("You have no rewards available", {theme:"colored"})
+        if (Number(pendingFurfiRewards) <= 0) {
+            toast.warn('You have no rewards available', { theme: 'colored' });
             return;
         }
         await onClaimRewards();
         return;
-    }   
-
+    };
 
     return (
         <div className={classes.cardView}>
@@ -227,7 +221,7 @@ function ClaimCard(props: IProps) {
                     <Box sx={{ mt: 3, ml: 4 }}>
                         <Box display="flex" alignItems="center">
                             <Box sx={{ position: 'relative' }}>
-                                <img 
+                                <img
                                     src={tokens[tokenA].logo}
                                     style={{
                                         width: '36px',
@@ -235,7 +229,7 @@ function ClaimCard(props: IProps) {
                                         borderRadius: '9999px',
                                         border: '1px solid yellow',
                                         backgroundColor: '#000',
-                                    }} 
+                                    }}
                                 />
                                 <img
                                     src={tokens[tokenB].logo}
@@ -265,27 +259,35 @@ function ClaimCard(props: IProps) {
                                     display: 'flex',
                                     justifyContent: 'space-between',
                                     px: '16px',
-                                    py: '4px'
+                                    py: '4px',
                                 },
                             }}
                         >
                             <Box>
-                                <Box><Typography>Strategy</Typography></Box>
-                                <Box><Typography>{strategies[strategy]}</Typography></Box>
+                                <Box>
+                                    <Typography>Strategy</Typography>
+                                </Box>
+                                <Box>
+                                    <Typography>{strategies[strategy]}</Typography>
+                                </Box>
                             </Box>
                             <Box>
-                                <Box><Typography>Deposited</Typography></Box>
+                                <Box>
+                                    <Typography>Deposited</Typography>
+                                </Box>
                                 <Box>
                                     {!account ? (
                                         <Skeleton sx={{ bgcolor: 'grey.500' }} width="20px" height="25px" />
-                                        ) : (
+                                    ) : (
                                         <Typography>${trim(Number(depositedAmount) * lpPrice, 2)}</Typography>
                                     )}
                                 </Box>
                             </Box>
-                            { strategy == 'furfiStrategy' ? (
+                            {strategy == 'furfiStrategy' ? (
                                 <Box>
-                                    <Box><Typography sx={{fontSize:'16px'}}>StakedInFurFiPool</Typography></Box>
+                                    <Box>
+                                        <Typography sx={{ fontSize: '16px' }}>StakedInFurFiPool</Typography>
+                                    </Box>
                                     <Box>
                                         {!account ? (
                                             <Skeleton sx={{ bgcolor: 'grey.500' }} width="20px" height="25px" />
@@ -296,11 +298,13 @@ function ClaimCard(props: IProps) {
                                 </Box>
                             ) : (
                                 <Box>
-                                    <Box><Typography>Reinvested</Typography></Box>
+                                    <Box>
+                                        <Typography>Reinvested</Typography>
+                                    </Box>
                                     <Box>
                                         {!account ? (
                                             <Skeleton sx={{ bgcolor: 'grey.500' }} width="20px" height="25px" />
-                                            ) : (
+                                        ) : (
                                             <Typography>${trim(Number(reinvested) * lpPrice, 2)}</Typography>
                                         )}
                                     </Box>
@@ -342,49 +346,68 @@ function ClaimCard(props: IProps) {
                             disabled={!account || strategy == 'stablecoinStrategy'}
                             onClick={onClaim}
                         >
-                            {
-                                strategy == 'furfiStrategy' ? 'Claim FurFiStaking Rewards  ' + `${trim(pendingFurfiRewards, 2)} FURFI + ` + `${trim(Number(pendingLpRewards) * lpPrice / bnbPrice , 2)} BNB` 
-                                :  strategy == 'standardStrategy' ? 'Claim Rewards ' + `${trim(pendingFurfiRewards, 2)} FURFI` : '.'
-                            }
+                            {strategy == 'furfiStrategy'
+                                ? 'Claim FurFiStaking Rewards  ' +
+                                  `${trim(pendingFurfiRewards, 2)} FURFI + ` +
+                                  `${trim((Number(pendingLpRewards) * lpPrice) / bnbPrice, 2)} BNB`
+                                : strategy == 'standardStrategy'
+                                ? 'Claim Rewards ' + `${trim(pendingFurfiRewards, 2)} FURFI`
+                                : '.'}
                         </Button>
                     </Box>
                 </Box>
             ) : actionView === ActionView.ADD ? (
                 <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', flexGrow: 1 }}>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', ml: 2, mr: 4}}>
-                            <Box sx={{ '& .MuiOutlinedInput-notchedOutline': { border: 'none' } }}>
-                                <Select
-                                    value={token.symbol}
-                                    sx={{
-                                        width: '120px',
-                                        '& .MuiSelect-select': { display: 'flex', alignItems: 'center', justifyContent:'space-between' },
-                                        "& .MuiSvgIcon-root": {
-                                            color: "white",
-                                        },
-                                    }}
-                                    onChange={onTokenChange}
-                                >
-                                    {Object.keys(tokens).map((item, index) => (
-                                        <MenuItem
-                                            key={index} 
-                                            value={tokens[item].symbol}
-                                            sx={{display:'flex', justifyContent:'space-between'}}
-                                        >
-                                            <Box display='flex' alignItems='center'>
-                                                <img
-                                                    src={tokens[item].logo}
-                                                    alt="logo"
-                                                    style={{ width: '32px', height: '32px' }}
-                                                />
-                                                <Typography sx={{ml:'8px'}}>{tokens[item].symbol}</Typography>
-                                            </Box>
-                                            {!account ? <Skeleton sx={{ml:'40px', bgcolor: 'grey.500' }} width="30px" height="25px" />
-                                                : <Typography sx={{ml:'40px'}}>{trim((balances?.find(i => i.tokenSymbol == tokens[item].symbol))?.balance ?? 0, 2)}</Typography>
-                                            }
-                                        </MenuItem>
-                                    ))}
-                                </Select>
-                            </Box>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', ml: 2, mr: 4 }}>
+                        <Box sx={{ '& .MuiOutlinedInput-notchedOutline': { border: 'none' } }}>
+                            <Select
+                                value={token.symbol}
+                                sx={{
+                                    width: '120px',
+                                    '& .MuiSelect-select': {
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'space-between',
+                                    },
+                                    '& .MuiSvgIcon-root': {
+                                        color: 'white',
+                                    },
+                                }}
+                                onChange={onTokenChange}
+                            >
+                                {Object.keys(tokens).map((item, index) => (
+                                    <MenuItem
+                                        key={index}
+                                        value={tokens[item].symbol}
+                                        sx={{ display: 'flex', justifyContent: 'space-between' }}
+                                    >
+                                        <Box display="flex" alignItems="center">
+                                            <img
+                                                src={tokens[item].logo}
+                                                alt="logo"
+                                                style={{ width: '32px', height: '32px' }}
+                                            />
+                                            <Typography sx={{ ml: '8px' }}>{tokens[item].symbol}</Typography>
+                                        </Box>
+                                        {!account ? (
+                                            <Skeleton
+                                                sx={{ ml: '40px', bgcolor: 'grey.500' }}
+                                                width="30px"
+                                                height="25px"
+                                            />
+                                        ) : (
+                                            <Typography sx={{ ml: '40px' }}>
+                                                {trim(
+                                                    balances?.find((i) => i.tokenSymbol == tokens[item].symbol)
+                                                        ?.balance ?? 0,
+                                                    2
+                                                )}
+                                            </Typography>
+                                        )}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </Box>
                         <Box sx={{ display: 'flex', alignItems: 'center' }}>
                             <TextField
                                 variant="standard"
@@ -410,23 +433,31 @@ function ClaimCard(props: IProps) {
                                 alignItems: 'center',
                                 justifyContent: 'space-between',
                                 px: '32px',
-                                py: '5px'
+                                py: '5px',
                             },
                         }}
                     >
                         <Box>
-                            <Typography> Balance : {''}
-                                {trim((balances?.find(item => item.tokenSymbol == token.symbol))?.balance ?? 0, 2)}
-                                <Button sx={{textTransform:'none', p: '0px', minWidth:'fit-content', mx:'4px'}} onClick={handleClickDepositMax}> (Max) </Button>
+                            <Typography>
+                                {' '}
+                                Balance : {''}
+                                {trim(balances?.find((item) => item.tokenSymbol == token.symbol)?.balance ?? 0, 2)}
+                                <Button
+                                    sx={{ textTransform: 'none', p: '0px', minWidth: 'fit-content', mx: '4px' }}
+                                    onClick={handleClickDepositMax}
+                                >
+                                    {' '}
+                                    (Max){' '}
+                                </Button>
                             </Typography>
                         </Box>
                         <Box>
                             <Typography>Deposited</Typography>
-                                {!account ? (
-                                    <Skeleton sx={{ bgcolor: 'grey.500' }} width="20px" height="25px" />
-                                    ) : (
-                                    <Typography>${trim(Number(depositedAmount) * lpPrice, 2)}</Typography>
-                                )}
+                            {!account ? (
+                                <Skeleton sx={{ bgcolor: 'grey.500' }} width="20px" height="25px" />
+                            ) : (
+                                <Typography>${trim(Number(depositedAmount) * lpPrice, 2)}</Typography>
+                            )}
                         </Box>
                         <Box>
                             <Typography>APY</Typography>
@@ -472,116 +503,134 @@ function ClaimCard(props: IProps) {
                 </Box>
             ) : (
                 actionView === ActionView.REMOVE && (
-                <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', flexGrow: 1 }}>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', ml: 2, mr: 4}}>
-                        <Box sx={{ '& .MuiOutlinedInput-notchedOutline': { border: 'none' } }}>
+                    <Box
+                        sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', flexGrow: 1 }}
+                    >
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between', ml: 2, mr: 4 }}>
+                            <Box sx={{ '& .MuiOutlinedInput-notchedOutline': { border: 'none' } }}>
                                 <Select
                                     value={token.symbol}
                                     sx={{
                                         width: '120px',
-                                        '& .MuiSelect-select': { display: 'flex', alignItems: 'center', justifyContent:'space-between' },
-                                        "& .MuiSvgIcon-root": {
-                                            color: "white",
+                                        '& .MuiSelect-select': {
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'space-between',
+                                        },
+                                        '& .MuiSvgIcon-root': {
+                                            color: 'white',
                                         },
                                     }}
                                     onChange={onTokenChange}
                                 >
                                     {Object.keys(tokens).map((item, index) => (
                                         <MenuItem
-                                            key={index} 
+                                            key={index}
                                             value={tokens[item].symbol}
-                                            sx={{display:'flex', justifyContent:'space-between'}}
+                                            sx={{ display: 'flex', justifyContent: 'space-between' }}
                                         >
-                                            <Box display='flex' alignItems='center'>
+                                            <Box display="flex" alignItems="center">
                                                 <img
                                                     src={tokens[item].logo}
                                                     alt="logo"
                                                     style={{ width: '32px', height: '32px' }}
                                                 />
-                                                <Typography sx={{ml:'8px'}}>{tokens[item].symbol}</Typography>
+                                                <Typography sx={{ ml: '8px' }}>{tokens[item].symbol}</Typography>
                                             </Box>
-                                            {!account ? <Skeleton sx={{ml:'40px', bgcolor: 'grey.500' }} width="30px" height="25px" />
-                                                : <Typography sx={{ml:'40px'}}>{trim((balances?.find(i => i.tokenSymbol == tokens[item].symbol))?.balance ?? 0, 2)}</Typography>
-                                            }
+                                            {!account ? (
+                                                <Skeleton
+                                                    sx={{ ml: '40px', bgcolor: 'grey.500' }}
+                                                    width="30px"
+                                                    height="25px"
+                                                />
+                                            ) : (
+                                                <Typography sx={{ ml: '40px' }}>
+                                                    {trim(
+                                                        balances?.find((i) => i.tokenSymbol == tokens[item].symbol)
+                                                            ?.balance ?? 0,
+                                                        2
+                                                    )}
+                                                </Typography>
+                                            )}
                                         </MenuItem>
                                     ))}
                                 </Select>
+                            </Box>
+                            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                <TextField
+                                    variant="standard"
+                                    InputProps={{
+                                        disableUnderline: true,
+                                        placeholder: 'e.g 1.83',
+                                        type: 'number',
+                                        inputProps: { min: 0 },
+                                    }}
+                                    sx={{ input: { color: '#FFF', fontSize: '20px', textAlign: 'right' } }}
+                                    onChange={onSetWithdrawAmount}
+                                    value={trim(withdrawAmt, 8)}
+                                />
+                            </Box>
                         </Box>
-                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                            <TextField
-                                variant="standard"
-                                InputProps={{
-                                    disableUnderline: true,
-                                    placeholder: 'e.g 1.83',
-                                    type: 'number',
-                                    inputProps: { min: 0 },
-                                }}
-                                sx={{ input: { color: '#FFF', fontSize: '20px', textAlign: 'right' } }}
-                                onChange={onSetWithdrawAmount}
-                                value={trim(withdrawAmt, 8)}
-                            />
-                        </Box>
-                    </Box>
-                    <Box
-                        sx={{
-                            display: 'flex',
-                            flexDirection: 'column',
-                            justifyContent: 'space-between',
-                            '& .MuiBox-root': {
+                        <Box
+                            sx={{
                                 display: 'flex',
+                                flexDirection: 'column',
                                 justifyContent: 'space-between',
-                                px: '32px',
-                                py: '8px',
-                            },
-                        }}
-                    >
-                        <Box>
-                            <Typography>Available</Typography>
-                            <Typography>
-                                {trim(depositedAmount, 2)} LP (${trim(Number(depositedAmount) * lpPrice, 2)})
-                                <Button 
-                                    sx={{textTransform:'none', p: '0px', minWidth:'fit-content', mx:'4px'}} 
-                                    onClick={()=>setWithdrawAmt(depositedAmount)}
-                                >
-                                     (Max) 
-                                </Button>
-                            </Typography>
-                        </Box>
-                        <Box>
-                            <Typography>APY</Typography>
-                            <Typography>{trim(apy, 2)}%</Typography>
-                        </Box>
-                    </Box>
-                    <Box sx={{ display: 'flex' }}>
-                        <Button
-                            sx={{
-                                flexGrow: 1,
-                                bgcolor: '#0f3152',
-                                color: '#FFF',
-                                borderBottomLeftRadius: '30px',
-                                py: 2,
-                            }}
-                            // disabled={!account}
-                            onClick={onWithdraw}
-                        >
-                            Withdraw to {token.symbol}
-                        </Button>
-                        <Button
-                            sx={{
-                                flexGrow: 1,
-                                bgcolor: '#0a172a9f',
-                                borderBottomRightRadius: '30px',
-                                py: 2,
-                                '&:hover': {
-                                    color: '#FFF',
+                                '& .MuiBox-root': {
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    px: '32px',
+                                    py: '8px',
                                 },
                             }}
-                            onClick={() => setActionView(ActionView.MAIN)}
                         >
-                            Back
-                        </Button>
+                            <Box>
+                                <Typography>Available</Typography>
+                                <Typography>
+                                    {trim(depositedAmount, 2)} LP (${trim(Number(depositedAmount) * lpPrice, 2)})
+                                    <Button
+                                        sx={{ textTransform: 'none', p: '0px', minWidth: 'fit-content', mx: '4px' }}
+                                        onClick={() => setWithdrawAmt(depositedAmount)}
+                                    >
+                                        (Max)
+                                    </Button>
+                                </Typography>
+                            </Box>
+                            <Box>
+                                <Typography>APY</Typography>
+                                <Typography>{trim(apy, 2)}%</Typography>
+                            </Box>
+                        </Box>
+                        <Box sx={{ display: 'flex' }}>
+                            <Button
+                                sx={{
+                                    flexGrow: 1,
+                                    bgcolor: '#0f3152',
+                                    color: '#FFF',
+                                    borderBottomLeftRadius: '30px',
+                                    py: 2,
+                                }}
+                                // disabled={!account}
+                                onClick={onWithdraw}
+                            >
+                                Withdraw to {token.symbol}
+                            </Button>
+                            <Button
+                                sx={{
+                                    flexGrow: 1,
+                                    bgcolor: '#0a172a9f',
+                                    borderBottomRightRadius: '30px',
+                                    py: 2,
+                                    '&:hover': {
+                                        color: '#FFF',
+                                    },
+                                }}
+                                onClick={() => setActionView(ActionView.MAIN)}
+                            >
+                                Back
+                            </Button>
+                        </Box>
                     </Box>
-                </Box>
                 )
             )}
         </div>
